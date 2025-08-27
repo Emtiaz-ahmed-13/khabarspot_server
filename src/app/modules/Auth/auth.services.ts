@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import { Secret } from "jsonwebtoken";
-import prisma from "../../shared/prisma";
 import config from "../../../config";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import { findUserByEmail } from "../../../helpers/userHelpers";
 import ApiError from "../../errors/ApiError";
+import prisma from "../../shared/prisma";
 import { TLogin, TRegister } from "./auth.interface";
 
 const SALT_ROUNDS = 10;

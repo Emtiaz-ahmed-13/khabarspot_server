@@ -5,7 +5,6 @@ import { AuthValidation } from "./auth.validation";
 
 const router = express.Router();
 
-// Public routes
 router.post(
   "/login",
   validateRequest(AuthValidation.loginSchema),

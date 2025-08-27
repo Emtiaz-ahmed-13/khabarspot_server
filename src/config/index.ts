@@ -14,4 +14,11 @@ export default {
     reset_pass_secret: process.env.JWT_RESET_PASS_TOKEN,
     reset_pass_token_expires_in: process.env.JWT_RESET_PASS_TOKEN_EXPIRES_IN,
   },
+  stripe: {
+    secret_key: process.env.STRIPE_SECRET_KEY,
+    price_id: process.env.STRIPE_PRICE_ID,
+    success_url: process.env.STRIPE_SUCCESS_URL,
+    cancel_url: process.env.STRIPE_CANCEL_URL,
+    webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
+  },
 };

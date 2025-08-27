@@ -12,6 +12,26 @@ datasource db {
 enum Role {
   ADMIN
   USER
+  VENDOR
+}
+
+enum PostStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Provider {
+  MOCK
+  SSLCOMMERZ
+  SHURJOPAY
+  STRIPE
+}
+
+enum SubscriptionStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
 }
 
 model User{
@@ -20,9 +40,112 @@ model User{
   email     String   @unique
   password  String
   role      Role     @default(USER)
+  isPremium Boolean  @default(false)
+
+  posts     Post[]
+  shops     Shop[]
+  comments  Comment[]
+  votes     Vote[]
+  subscription Subscription?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
  
   @@map("users")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Shop {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  posts       Post[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("shops")
+}
+
+model Post {
+  id           String     @id @default(uuid())
+  title        String
+  description  String
+  location     String
+  imageUrl     String
+  priceMin     Int?
+  priceMax     Int?
+  status       PostStatus @default(PENDING)
+  isPremium    Boolean    @default(false)
+  rejectReason String?
+
+  authorId String
+  author   User       @relation(fields: [authorId], references: [id])
+
+  categoryId String
+  category   Category  @relation(fields: [categoryId], references: [id])
+
+  shopId   String?
+  shop     Shop?      @relation(fields: [shopId], references: [id])
+
+  votes     Vote[]
+  comments  Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("posts")
+}
+
+model Vote {
+  id        String   @id @default(uuid())
+  value     Int
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, postId])
+  @@map("votes")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  rating    Int
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("comments")
+}
+
+model Subscription {
+  id            String              @id @default(uuid())
+  userId        String              @unique
+  user          User                @relation(fields: [userId], references: [id])
+  provider      Provider
+  status        SubscriptionStatus  @default(PENDING)
+  transactionId String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@map("subscriptions")
 }
